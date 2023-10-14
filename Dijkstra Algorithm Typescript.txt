@@ -1,0 +1,154 @@
+class Graph{
+   private nodes: string[];
+   private adjacencyList: {[key: string]: {[key: string]: number}};
+
+   constructor() {
+    this.nodes = [];
+    this.adjacencyList = {};
+   } 
+
+   addNode(node: string) {
+    this.nodes.push(node);
+    this.adjacencyList[node] = {};
+   }
+
+   addEdge(startNode: string, endNode: string, edgeWeight: number)
+   {
+        this.adjacencyList[startNode][endNode] = edgeWeight;
+   }
+
+   showNodes(): string[] {
+    return this.nodes;
+   }
+
+   showEdges(): {[key: string]: {[key: string]: number}} {
+    return this.adjacencyList;
+   }
+
+   dijkstra(sourceNode: string) {
+    let visitedNodes = new Set<String>();
+    let distancesToNodes: {[key: string]: number} = {};
+   
+    //Step 1: Initialize the distancesToNodes object based on the sourceNode
+    //   sourceNode gets the value of 0 (because the distance to it is known) and the other  nodes 
+    //   get the value Infinity (because the distance from source node to them is unknown)
+
+        this.nodes.forEach((node: string) => {
+            if(node === sourceNode)
+            {
+                distancesToNodes[sourceNode] = 0;
+            }
+            else {
+                distancesToNodes[node] = Infinity;
+            }
+        });
+
+    //Step 2: Find in the distancesToNodes object the node with the lowest weight based on 
+    //        the visited Set
+    // Obs:   Take into account the visited Set !!!
+
+    let currentNode: string = this.findLowestWeightNode(distancesToNodes,visitedNodes);
+
+    while(currentNode !== "") {
+
+    //Step 3: Update the weights of the edges of the adjacent nodes of the current node
+    //         weight = current Node Weight + Edge Weight;
+    //         if the node already has a value, assign to it only if the value is lower     
+
+    let currentNodeWeight = distancesToNodes[currentNode];
+    let adjacentNodes = this.adjacencyList[currentNode];
+    for(let node in adjacentNodes)
+    {
+        let newDistanceOfAdjacentNode = currentNodeWeight + adjacentNodes[node];
+
+        if(distancesToNodes[node] > newDistanceOfAdjacentNode)
+        {
+            distancesToNodes[node] = newDistanceOfAdjacentNode;
+        }
+    }
+
+    //Step 4: Mark the current Node as visited after updating the edges(distances) of its adjacent nodes 
+    visitedNodes.add(currentNode);
+
+    //Step 5: Repeat Steps 2,3,4 until there is no node to visit 
+    currentNode = this.findLowestWeightNode(distancesToNodes,visitedNodes);
+    }
+
+    this.showResult(distancesToNodes,sourceNode);
+   }
+
+   private showResult(distances: {[key: string]: number}, sourceNode: string): void {
+        console.log(`SOURCE NODE:  ${sourceNode}`);
+        for(let node in distances) {
+            console.log(`The distance from ${sourceNode} to ${node} is: `, distances[node]);
+        }
+   }
+
+   private findLowestWeightNode(distanceObject: {[key: string]: number}, visitedSet: Set<String>): string {
+    let minWeight = Infinity;
+    let minNode = "";
+    for(let node in distanceObject)
+    {
+        if(!visitedSet.has(node) && distanceObject[node] < minWeight) {
+            minNode = node;
+            minWeight = distanceObject[node];
+        }
+    }
+    return minNode;
+   }
+}
+
+const myGraph = new Graph();
+
+//Add the nodes of the Graph
+myGraph.addNode("0");
+myGraph.addNode("1");
+myGraph.addNode("2");
+myGraph.addNode("3");
+myGraph.addNode("4");
+myGraph.addNode("5");
+myGraph.addNode("6");
+myGraph.addNode("7");
+myGraph.addNode("8");
+
+//Add the edges of the graph (relationships between the nodes)
+myGraph.addEdge("0","1",4);
+myGraph.addEdge("0","7",8);
+
+myGraph.addEdge("1","0",4);
+myGraph.addEdge("1","7",11);
+myGraph.addEdge("1","2",8);
+
+myGraph.addEdge("2","1",8);
+myGraph.addEdge("2","8",2);
+myGraph.addEdge("2","5",4);
+myGraph.addEdge("2","3",7);
+
+myGraph.addEdge("3","2",7);
+myGraph.addEdge("3","5",14);
+myGraph.addEdge("3","4",9);
+
+myGraph.addEdge("4","3",9);
+myGraph.addEdge("4","5",10);
+
+myGraph.addEdge("5","4",10);
+myGraph.addEdge("5","3",14);
+myGraph.addEdge("5","2",4);
+myGraph.addEdge("5","6",2);
+
+myGraph.addEdge("6","5",2);
+myGraph.addEdge("6","8",6);
+myGraph.addEdge("6","7",1);
+
+myGraph.addEdge("7","8",7);
+myGraph.addEdge("7","1",11);
+myGraph.addEdge("7","0",8);
+myGraph.addEdge("7","6",1);
+
+myGraph.addEdge("8","2",2);
+myGraph.addEdge("8","7",7);
+myGraph.addEdge("8","6",6);
+
+// console.log(myGraph.showNodes()); 
+// console.log(myGraph.showEdges());
+myGraph.dijkstra("8");

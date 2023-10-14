@@ -1,0 +1,109 @@
+Exemplu: https://www.javatpoint.com/prim-algorithm
+
+class Graph{
+   private nodes: string[];
+   private adjacencyList: {[key: string]: {[key: string]: number}};
+
+   constructor() {
+    this.nodes = [];
+    this.adjacencyList = {};
+   } 
+
+   addNode(node: string) {
+    this.nodes.push(node);
+    this.adjacencyList[node] = {};
+   }
+
+   addEdge(startNode: string, endNode: string, edgeWeight: number)
+   {
+        this.adjacencyList[startNode][endNode] = edgeWeight;
+   }
+
+   showNodes(): string[] {
+    return this.nodes;
+   }
+
+   showEdges(): {[key: string]: {[key: string]: number}} {
+    return this.adjacencyList;
+   }
+
+  prim(sourceNode: string): void {
+    let MST: {[key: string]: number} = {};
+    let parent: {[key: string]: string} = {};
+    
+    MST[sourceNode] = 0;
+    parent[sourceNode] = "Source Node";
+
+    this.nodes = this.nodes.filter((node: string) => {
+        return node !== sourceNode;
+    });
+
+    while(this.nodes.length) {
+        let minimumDistance: number = Infinity;
+        
+        let closestNode: string = "";
+        
+        for(let mstNode in MST) {
+            let adjacentNodes = this.adjacencyList[mstNode];
+            for(let adjacentNode in adjacentNodes) {
+                if(adjacentNodes[adjacentNode] < minimumDistance && !Object.keys(MST).includes(adjacentNode))
+                {
+                    minimumDistance = adjacentNodes[adjacentNode];
+                    closestNode = adjacentNode;
+                    parent[closestNode] = mstNode;
+                }
+            }
+        }
+            MST[closestNode] = minimumDistance;
+            this.nodes = this.nodes.filter((node: string) => {
+                return node !== closestNode;
+            });
+    }
+    this.showResult(MST,parent);
+  }
+
+  private showResult(mst: {[key: string]: number}, parent: {[key: string]: string}): void {
+        for(let node in parent)
+        {
+            if(parent[node] === "Source Node")
+            {
+                console.log("Source Node: " + node);
+            }
+            else {
+                console.log("Edge: " + parent[node] + '-->' + node + " weight is: " + mst[node]); 
+            }
+        }
+  }
+}
+
+const myGraph = new Graph();
+
+//Add the nodes of the Graph
+myGraph.addNode("A");
+myGraph.addNode("B");
+myGraph.addNode("C");
+myGraph.addNode("D");
+myGraph.addNode("E");
+
+//Add the edges of the graph (relationships between the nodes)
+myGraph.addEdge("D","B",4);
+myGraph.addEdge("D","C",2);
+myGraph.addEdge("D","E",1);
+
+myGraph.addEdge("B","D",4);
+myGraph.addEdge("B","C",10);
+
+myGraph.addEdge("C","B",10);
+myGraph.addEdge("C","D",2);
+myGraph.addEdge("C","E",6);
+myGraph.addEdge("C","A",3);
+
+myGraph.addEdge("E","D",1);
+myGraph.addEdge("E","C",6);
+
+myGraph.addEdge("A","C",3);
+
+// console.log(myGraph.showNodes()); 
+// console.log(myGraph.showEdges());
+
+myGraph.prim("B");

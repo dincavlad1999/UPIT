@@ -1,0 +1,158 @@
+class Graph{
+   private nodes: string[];
+   private adjacencyList: {[key: string]: {[key: string]: number}};
+
+   constructor() {
+    this.nodes = [];
+    this.adjacencyList = {};
+   } 
+
+   addNode(node: string) {
+    this.nodes.push(node);
+    this.adjacencyList[node] = {};
+   }
+
+   addEdge(startNode: string, endNode: string, edgeWeight: number)
+   {
+        this.adjacencyList[startNode][endNode] = edgeWeight;
+   }
+
+   showNodes(): string[] {
+    return this.nodes;
+   }
+
+   showEdges(): {[key: string]: {[key: string]: number}} {
+    return this.adjacencyList;
+   }
+
+  private findParent(parents: {[key: string]: string}, node: string): string {
+    let currentNode = node;
+    while (parents[currentNode] !== currentNode) {
+      currentNode = parents[currentNode];
+    }
+    return currentNode;
+  }
+
+  kruskal(): {[key: string]: {[key: string]: number}} {
+    const mst: {[key: string]: {[key: string]: number}} = {};
+    const sortedEdges = [];
+
+    for (const startNode in this.adjacencyList) {
+      for (const endNode in this.adjacencyList[startNode]) {
+        sortedEdges.push({
+          startNode: startNode,
+          endNode:endNode,
+          weight: this.adjacencyList[startNode][endNode]
+        });
+      }
+    }
+   
+    sortedEdges.sort((a, b) => a.weight - b.weight);
+    console.error("Pasul1: ", sortedEdges);
+   
+    const parents: {[key: string]: string} = {};
+    for (const node of this.nodes) {
+      parents[node] = node;
+    }
+
+    for (const edge of sortedEdges) {
+      const { startNode, endNode, weight } = edge;
+      
+      const startParent = this.findParent(parents, startNode);
+      const endParent = this.findParent(parents, endNode);
+
+     //Trebuie ca parintii celor doua noduri sa fie diferiti ca sa nu fie ciclu
+      
+      if (startParent !== endParent) {
+        if (!mst[startNode]) mst[startNode] = {};
+        if (!mst[endNode]) mst[endNode] = {};
+        mst[startNode][endNode] = weight;
+        mst[endNode][startNode] = weight;
+
+        //Updatez parintele
+        //Merge si invers parents[endParent] = startParent;
+        parents[startParent] = endParent;
+      }
+    }
+
+    return mst;
+  }
+
+  minimumCost(mst: {[key: string]: {[key: string]: number}} ): number {
+   let minCost: number = 0;
+   for(const key of Object.keys(mst)) {
+      for(let neighbour in mst[key]) {
+         minCost += mst[key][neighbour];
+      }
+   }
+   //impartit la 2 pentru ca ia valorile de 2 ori pentru aceeasi muchie.
+   return minCost/2;
+  }
+}
+
+const myGraph = new Graph();
+
+//Add the nodes of the Graph
+myGraph.addNode("0");
+myGraph.addNode("1");
+myGraph.addNode("2");
+myGraph.addNode("3");
+// myGraph.addNode("4");
+// myGraph.addNode("5");
+// myGraph.addNode("6");
+// myGraph.addNode("7");
+// myGraph.addNode("8");
+
+
+myGraph.addEdge("0","1",10);
+myGraph.addEdge("1","3",15);
+myGraph.addEdge("2","3",4);
+myGraph.addEdge("2","0",6);
+myGraph.addEdge("0","3",5);
+
+//Add the edges of the graph (relationships between the nodes)
+// myGraph.addEdge("0","1",4);
+// myGraph.addEdge("0","7",8);
+
+// myGraph.addEdge("1","0",4);
+// myGraph.addEdge("1","7",11);
+// myGraph.addEdge("1","2",8);
+
+// myGraph.addEdge("2","1",8);
+// myGraph.addEdge("2","8",2);
+// myGraph.addEdge("2","5",4);
+// myGraph.addEdge("2","3",7);
+
+// myGraph.addEdge("3","2",7);
+// myGraph.addEdge("3","5",14);
+// myGraph.addEdge("3","4",9);
+
+// myGraph.addEdge("4","3",9);
+// myGraph.addEdge("4","5",10);
+
+// myGraph.addEdge("5","4",10);
+// myGraph.addEdge("5","3",14);
+// myGraph.addEdge("5","2",4);
+// myGraph.addEdge("5","6",2);
+
+// myGraph.addEdge("6","5",2);
+// myGraph.addEdge("6","8",6);
+// myGraph.addEdge("6","7",1);
+
+// myGraph.addEdge("7","6",1);
+// myGraph.addEdge("7","8",7);
+// myGraph.addEdge("7","1",11);
+// myGraph.addEdge("7","0",8);
+
+// myGraph.addEdge("8","2",2);
+// myGraph.addEdge("8","6",6);
+// myGraph.addEdge("8","7",7);
+
+console.error("Graf initial: ")
+console.log(myGraph.showEdges());
+
+const minimumSpanningTree = myGraph.kruskal();
+console.error("Minimum Spanning Tree: ");
+console.log(minimumSpanningTree);
+console.error("Minimum Cost: ",myGraph.minimumCost(minimumSpanningTree));
+

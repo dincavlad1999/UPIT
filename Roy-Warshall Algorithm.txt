@@ -1,0 +1,94 @@
+//Typescript afiseaza Infinity ca si NULL in obiecte 
+console.error("OBSERVATIE: ", 4 - 2 > 4 ? {a: 0} : {a: Infinity});
+
+//Limitari : 
+//- graful nu trebuie sa contina cicluri negative;
+//Avantaje:
+//Functioneaza si pe grafuri cu muchii negative.
+
+class Graph{
+   private nodes: string[];
+   private adjacencyList: {[key: string]: {[key: string]: number}};
+
+   constructor() {
+    this.nodes = [];
+    this.adjacencyList = {};
+   } 
+
+   addNode(node: string) {
+    this.nodes.push(node);
+    this.adjacencyList[node] = {};
+   }
+
+   addEdge(startNode: string, endNode: string, edgeWeight: number)
+   {
+        this.adjacencyList[startNode][endNode] = edgeWeight;
+   }
+
+   showNodes(): string[] {
+    return this.nodes;
+   }
+
+   showEdges(): {[key: string]: {[key: string]: number}} {
+    return this.adjacencyList;
+   }
+
+    royWarshall(): {[key: string]: {[key: string]: number}} {
+        let distances: {[key: string]: {[key: string]: number}} = {};
+
+        for (let node of this.nodes) {
+            distances[node] = {};
+            for (let otherNode of this.nodes) {
+                distances[node][otherNode] = (node === otherNode) ? 0 : Infinity;
+            }
+        }
+        console.error("Pasul1: ", distances);
+
+        for (let node in this.adjacencyList) {
+            for (let neighbor in this.adjacencyList[node]) {
+                distances[node][neighbor] = this.adjacencyList[node][neighbor];
+            }
+        }
+
+         console.error("Pasul2: ", distances);
+
+        for (let k of this.nodes) {
+            for (let i of this.nodes) {
+                for (let j of this.nodes) {
+                        if (distances[i][k] + distances[k][j] < distances[i][j]) {
+                            distances[i][j] = distances[i][k] + distances[k][j];
+                        }
+                }
+            }
+        }
+        console.error("Rezultat:")
+        return distances;
+    }
+
+}
+
+const myGraph = new Graph();
+
+//Add the nodes of the Graph
+myGraph.addNode("1");
+myGraph.addNode("2");
+myGraph.addNode("3");
+myGraph.addNode("4");
+
+
+//Add the edges of the graph (relationships between the nodes)
+myGraph.addEdge("1","2",3);
+myGraph.addEdge("1","4",5);
+
+myGraph.addEdge("2","1",2);
+myGraph.addEdge("2","4",4);
+
+myGraph.addEdge("3","2",1);
+
+myGraph.addEdge("4","3",2);
+
+console.error("Graf initial: ")
+console.log(myGraph.showEdges());
+
+let distances = myGraph.royWarshall();
+console.log(distances);

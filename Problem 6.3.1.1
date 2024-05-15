@@ -1,0 +1,96 @@
+/* Problem 6.3.1. (este facuta pentru n years)
+Calculate the probability that a 30 years old person will live:
+a) at least 40 years;
+b) exactly 45 years;
+c) at most 50 years;
+d) at least 35 years but at most 55 years. */
+
+//Helps me link the values 
+    let age: number[] = [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46,
+     47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75,
+     76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100];
+
+//Expected number of survivors MALE
+    let lxM: number[] = [
+    100000, 99930, 99860, 99760, 99654, 99543, 99425, 99302, 99173, 99032, 98880, 98716, 98540, 98353, 98144, 97914,
+    97664, 97392, 97100, 96754, 96356, 95905, 95402, 94849, 94231, 93548, 92804, 91998, 91133, 90209, 89228, 88191,
+    87101, 85960, 84731, 83417, 82024, 80556, 79017, 77374, 75633, 73803, 71891, 69907, 67814, 65625, 63353, 61011,
+    58614, 56111, 53524, 50875, 48183, 45471, 42371, 38981, 35399, 31727, 28059, 24483, 21072, 17886, 14970, 12352,
+    10045, 8050, 6356, 4942, 3785, 2854, 2118, 1546, 1111, 785, 545, 372, 250, 165, 107, 68, 42, 26, 15
+    ];
+
+//Expected number of survivors FEMALE
+    let lxF: number[] = [
+    100000, 99960, 99920, 99880, 99838, 99794, 99748, 99700, 99651, 99597, 99539, 99477, 99412, 99342, 99261, 99167,
+    99062, 98945, 98817, 98670, 98507, 98325, 98127, 97911, 97670, 97404, 97114, 96799, 96461, 96088, 95683, 95245,
+    94774, 94272, 93717, 93112, 92456, 91752, 91000, 90182, 89302, 88361, 87361, 86304, 85125, 83829, 82423, 80911,
+    79301, 77493, 75501, 73342, 71032, 68588, 65336, 61387, 56877, 51959, 46789, 41524, 36311, 31280, 26538, 22170,
+    18232, 14757, 11751, 9205, 7091, 5370, 3996, 2922, 2099, 1480, 1024, 696, 463, 303, 194, 122, 75, 45, 26
+    ];
+
+class Person {
+    private age: number;
+    private gender: string;
+
+    constructor(age: number, gender: string) {
+        this.age = age;
+        this.gender = gender;
+    }
+
+    leaveAtLeast(years: number): void {
+    //Folosesc nPx = l(x+n)/l(x) formula, unde n = years, x = age (6.13)
+        
+        let probability: string =  (this.computeNumberOfSurvivors(this.age + years, this.gender)/ this.computeNumberOfSurvivors(this.age,this.gender)).toFixed(4);
+        console.log(`The probability of a ${this.gender} person of ${this.age} years old of living AT LEAST ${years} years is: `, probability);
+    }
+
+    leaveAtMost(years: number): void {
+    //Folosesc nQx = [l(x) - l(x+n)]/l(x), unde n = years, x = age (6.13)
+
+        let probability: string = ((this.computeNumberOfSurvivors(this.age,this.gender) - this.computeNumberOfSurvivors(this.age + years, this.gender))/this.computeNumberOfSurvivors(this.age,this.gender)).toFixed(4);
+        console.log(`The probability of a ${this.gender} person of ${this.age} years old of living AT MOST ${years} years is: `, probability);
+
+    }
+
+    leaveExactly(years: number): void {
+    //Folosesc m|nqx = [l(x+m) - l(x+m+n)]/l(x), unde m = years, n = 1 year, x = age (6.14)
+    // n = the number of additional years after 𝑚 within which the person must die 
+        const n: number = 1;
+        let probability: string = ((this.computeNumberOfSurvivors(this.age + years,this.gender) - this.computeNumberOfSurvivors(this.age + years + n,this.gender))/this.computeNumberOfSurvivors(this.age,this.gender)).toFixed(4);
+        console.log(`The probability of a ${this.gender} person of ${this.age} years old of living EXACTLY ${years} years is: `, probability);
+    }
+
+    leaveAtLeastButAtMost(atLeastYears: number, atMostYears: number): void {
+    //Folosesc m|nqx = [l(x+m) - l(x+m+n)]/l(x), unde m = atLeastYears, n = atMostYears - atLeastYears, x = age (6.14)
+    // n = the number of additional years after 𝑚 within which the person must die     
+
+        let probability: string = ((this.computeNumberOfSurvivors(this.age + atLeastYears, this.gender) - this.computeNumberOfSurvivors(this.age + atLeastYears + (atMostYears - atLeastYears), this.gender))/this.computeNumberOfSurvivors(this.age, this.gender)).toFixed(4);
+        console.log(`The probability of a ${this.gender} person of ${this.age} years old of living AT LEAST ${atLeastYears} years BUT AT MOST ${atMostYears} years is: `, probability);
+    }
+
+    private computeNumberOfSurvivors(years: number, gender: string): number {
+        let index: number = age.indexOf(years);
+        
+        if (index === -1) {
+            console.error(`Invalid age: ${years}. No such age found in age array.`);
+            return 0;
+        }
+        if(gender === "male") {
+            return lxM[index];
+        }
+        return lxF[index];
+    }
+
+}
+
+const person =  new Person(30,"male");
+person.leaveAtLeast(40);
+person.leaveExactly(45)
+person.leaveAtMost(50);
+person.leaveAtLeastButAtMost(35,55);
+
+
+
+
+
+

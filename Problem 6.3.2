@@ -89,7 +89,7 @@ class Person {
         
         let probability = ((this.computeNumberOfSurvivors(this.age,this.gender) - this.computeNumberOfSurvivors(this.age + 1, this.gender)) 
                             / this.computeNumberOfSurvivors(this.age,  this.gender));
-        console.log(`The probability of a ${this.gender} person of ${this.age} years old of DYING IN 1 YEAR is: `, probability.toFixed(4));
+        // console.log(`The probability of a ${this.gender} person of ${this.age} years old of DYING IN 1 YEAR is: `, probability.toFixed(4));
 
         return probability;
     }
@@ -99,7 +99,7 @@ class Person {
         
         let probability = ((this.computeNumberOfSurvivors(age,this.gender) - this.computeNumberOfSurvivors(age + 1, this.gender)) 
                             / this.computeNumberOfSurvivors(age,  this.gender));
-        console.log(`The probability of a ${this.gender} person of ${this.age} years old of DYING AT THE AGE OF ${age} years is: `, probability.toFixed(4));
+        // console.log(`The probability of a ${this.gender} person of ${age} years old of DYING IN ONE YEAR is: `, probability.toFixed(4));
 
         return probability;
     }
@@ -108,7 +108,7 @@ class Person {
     //Folosesc nPx = l(x+n)/l(x) formula, unde n = years, x = age (6.13)
         
         let probability: number =  (this.computeNumberOfSurvivors(this.age + years, this.gender)/ this.computeNumberOfSurvivors(this.age,this.gender));
-        console.log(`The probability of a ${this.gender} person of ${this.age} years old of living AT LEAST ${years} years is: `, probability.toFixed(4));
+        // console.log(`The probability of a ${this.gender} person of ${this.age} years old of living AT LEAST ${years} years is: `, probability.toFixed(4));
     
         return probability;
     }
@@ -165,7 +165,7 @@ const family = new Family();
 family.addFamilyMember(husband);
 family.addFamilyMember(wife);
 family.parentsDieSameYear();
-// family.parentsDieSameAge();
+family.parentsDieSameAge();
 
 
 

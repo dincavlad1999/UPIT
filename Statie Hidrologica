@@ -1,0 +1,78 @@
+// Interface for the data points
+interface DataPoint {
+    X: number;
+    Y: number;
+    frequency: number;
+}
+
+// Data: array of (X, Y, frequency) tuples
+const data: DataPoint[] = [
+    { X: 3.0, Y: 3.2, frequency: 1 }, { X: 3.1, Y: 3.2, frequency: 1 }, { X: 3.1, Y: 3.3, frequency: 1 }, 
+    { X: 3.2, Y: 3.3, frequency: 1 }, { X: 3.3, Y: 3.3, frequency: 2 }, { X: 3.2, Y: 3.4, frequency: 1 }, 
+    { X: 3.3, Y: 3.4, frequency: 2 }, { X: 3.4, Y: 3.4, frequency: 1 }, { X: 3.2, Y: 3.5, frequency: 3 }, 
+    { X: 3.3, Y: 3.5, frequency: 5 }, { X: 3.4, Y: 3.5, frequency: 2 }, { X: 3.5, Y: 3.5, frequency: 1 }, 
+    { X: 3.1, Y: 3.6, frequency: 1 }, { X: 3.2, Y: 3.6, frequency: 5 }, { X: 3.3, Y: 3.6, frequency: 5 }, 
+    { X: 3.4, Y: 3.6, frequency: 4 }, { X: 3.5, Y: 3.6, frequency: 1 }, { X: 3.6, Y: 3.6, frequency: 1 }, 
+    { X: 3.2, Y: 3.7, frequency: 1 }, { X: 3.3, Y: 3.7, frequency: 10 }, { X: 3.4, Y: 3.7, frequency: 3 }, 
+    { X: 3.5, Y: 3.7, frequency: 1 }, { X: 3.6, Y: 3.7, frequency: 1 }, { X: 3.2, Y: 3.8, frequency: 1 }, 
+    { X: 3.3, Y: 3.8, frequency: 1 }, { X: 3.4, Y: 3.8, frequency: 11 }, { X: 3.5, Y: 3.8, frequency: 2 }, 
+    { X: 3.7, Y: 3.8, frequency: 1 }, { X: 3.2, Y: 3.9, frequency: 1 }, { X: 3.3, Y: 3.9, frequency: 12 }, 
+    { X: 3.4, Y: 3.9, frequency: 1 }, { X: 3.9, Y: 3.9, frequency: 1 }, { X: 3.4, Y: 4.0, frequency: 2 }, 
+    { X: 3.5, Y: 4.0, frequency: 1 }, { X: 3.4, Y: 4.1, frequency: 2 }, { X: 3.6, Y: 4.1, frequency: 2 }, 
+    { X: 3.8, Y: 4.1, frequency: 1 }, { X: 3.9, Y: 4.1, frequency: 1 }
+];
+
+// Helper function to calculate the sum of an array
+const sum = (arr: number[]): number => arr.reduce((a, b) => a + b, 0);
+
+// Helper function to calculate the sum of the products of corresponding elements of two arrays
+const sumProduct = (arr1: number[], arr2: number[]): number => arr1.reduce((sum, a, i) => sum + a * arr2[i], 0);
+
+// Extract frequencies from the data
+const frequencies = data.map(d => d.frequency);
+// Calculate the total sum of frequencies
+const sumFrequencies = sum(frequencies);
+
+// Compute the mean of X
+const mean_X = sumProduct(data.map(d => d.X), frequencies) / sumFrequencies;
+// Compute the mean of Y
+const mean_Y = sumProduct(data.map(d => d.Y), frequencies) / sumFrequencies;
+
+// Function to calculate the variance
+const variance = (values: number[], mean: number, frequencies: number[]): number => 
+    sumProduct(frequencies, values.map(value => (value - mean) ** 2)) / sum(frequencies);
+
+// Compute the variance of X
+const var_X = variance(data.map(d => d.X), mean_X, frequencies);
+// Compute the variance of Y
+const var_Y = variance(data.map(d => d.Y), mean_Y, frequencies);
+
+// Function to calculate the covariance
+const covariance = (data: DataPoint[], mean_X: number, mean_Y: number): number => 
+    sumProduct(frequencies, data.map(d => (d.X - mean_X) * (d.Y - mean_Y))) / sum(frequencies);
+
+// Compute the covariance of X and Y
+const cov_XY = covariance(data, mean_X, mean_Y);
+
+// Compute the slope (b) for the linear regression
+const b = cov_XY / var_X;
+// Compute the intercept (a) for the linear regression
+const a = mean_Y - b * mean_X;
+
+// Compute the coefficient of correlation (r)
+const r = cov_XY / (Math.sqrt(var_X) * Math.sqrt(var_Y));
+// Compute the coefficient of determination (r^2)
+const r_squared = r ** 2;
+
+// Log the results
+console.log({
+    mean_X,
+    mean_Y,
+    var_X,
+    var_Y,
+    cov_XY,
+    b,
+    a,
+    r,
+    r_squared
+});

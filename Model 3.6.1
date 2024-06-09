@@ -1,0 +1,22 @@
+const x: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
+const y: number[] = [34, 30, 23, 17, 14, 13, 11, 10];
+
+// Number of data points
+const n: number = x.length;
+
+// Summations
+const sum = (arr: number[]): number => arr.reduce((a, b) => a + b, 0);
+
+const sum_x: number = sum(x);
+const sum_y: number = sum(y);
+const sum_xy: number = sum(x.map((xi, i) => xi * y[i]));
+const sum_x2: number = sum(x.map(xi => xi ** 2));
+
+// Slope (b) and Intercept (a)
+const b: number = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x ** 2);
+const a: number = (sum_y * sum_x2 - sum_x * sum_xy) / (n * sum_x2 - sum_x ** 2);
+
+// Forecast for 2022 (x = 9)
+const y_2022: number = a + b * 9;
+
+console.log({ a, b, y_2022 });

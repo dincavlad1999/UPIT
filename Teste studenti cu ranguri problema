@@ -1,0 +1,56 @@
+// Define the data points
+interface DataPoint {
+    student: number;
+    testA: number;
+    testB: number;
+}
+
+// Data: array of test scores for students
+const data: DataPoint[] = [
+    { student: 1, testA: 10, testB: 17 }, { student: 2, testA: 25, testB: 23 }, 
+    { student: 3, testA: 13, testB: 15 }, { student: 4, testA: 14, testB: 12 }, 
+    { student: 5, testA: 28, testB: 26 }, { student: 6, testA: 16, testB: 18 }, 
+    { student: 7, testA: 6, testB: 8 }, { student: 8, testA: 8, testB: 13 }, 
+    { student: 9, testA: 24, testB: 20 }, { student: 10, testA: 17, testB: 22 }, 
+    { student: 11, testA: 30, testB: 28 }, { student: 12, testA: 15, testB: 13 }, 
+    { student: 13, testA: 23, testB: 25 }, { student: 14, testA: 4, testB: 10 }, 
+    { student: 15, testA: 26, testB: 27 }, { student: 16, testA: 12, testB: 5 }, 
+    { student: 17, testA: 21, testB: 19 }, { student: 18, testA: 19, testB: 14 }, 
+    { student: 19, testA: 29, testB: 29 }, { student: 20, testA: 18, testB: 24 }
+];
+
+// Function to rank scores
+const rankScores = (scores: number[]): number[] => {
+    const sorted = scores.slice().sort((a, b) => b - a);
+    return scores.map(score => sorted.indexOf(score) + 1);
+};
+
+// Extract the scores
+const testAScores = data.map(d => d.testA);
+const testBScores = data.map(d => d.testB);
+
+// Rank the scores
+const rankTestA = rankScores(testAScores);
+const rankTestB = rankScores(testBScores);
+
+// Compute differences and squared differences
+const differences = rankTestA.map((rank, i) => rank - rankTestB[i]);
+const squaredDifferences = differences.map(diff => diff ** 2);
+
+// Sum of squared differences
+const sumSquaredDifferences = squaredDifferences.reduce((sum, sqDiff) => sum + sqDiff, 0);
+
+// Number of students
+const n = data.length;
+
+// Compute Spearman's rank correlation coefficient
+const rho = 1 - (6 * sumSquaredDifferences) / (n * (n ** 2 - 1));
+
+console.log({
+    rankTestA,
+    rankTestB,
+    differences,
+    squaredDifferences,
+    sumSquaredDifferences,
+    rho
+});
